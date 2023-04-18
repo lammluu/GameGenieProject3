@@ -85,48 +85,48 @@ void extractDataFromFile(vector<Game>& listOfAllGames){
             getline(stream, tempReRelease, '%');
             getline(stream, tempYear, '%');
 
-        if(tempHandheld == "True"){
-            handheld = true;
-        }
-        else{
-            handheld = false;
-        }
+            if(tempHandheld == "True"){
+                handheld = true;
+            }
+            else{
+                handheld = false;
+            }
 
 
-    maxPlayers = stoi(tempMaxPlayers);
-      //  cout << tempMaxPlayers << endl;
+            maxPlayers = stoi(tempMaxPlayers);
+            //  cout << tempMaxPlayers << endl;
 
 
-        if(tempMulti == "True"){
-            multiplatform = true;
-        }
-        else{
-            multiplatform = false;
-        }
+            if(tempMulti == "True"){
+                multiplatform = true;
+            }
+            else{
+                multiplatform = false;
+            }
 
-        if(tempOnline == "True"){
-            online = true;
-        }
-        else{
-            online = false;
-        }
+            if(tempOnline == "True"){
+                online = true;
+            }
+            else{
+                online = false;
+            }
 
-        licensed = true;
-        sequel = true;
-       reviewScore = stoi(tempScore);
-   //  cout << tempScore << endl;
-       sales = stof(tempSales);
-        usedPrice = stof(tempUsedPrice);
-        reRelease = true;
-       releaseYear = stoi(tempYear);
+            licensed = true;
+            sequel = true;
+            reviewScore = stoi(tempScore);
+            //  cout << tempScore << endl;
+            sales = stof(tempSales);
+            usedPrice = stof(tempUsedPrice);
+            reRelease = true;
+            releaseYear = stoi(tempYear);
 
-        Game toBeAdded(title, handheld, maxPlayers, multiplatform, online,
-                       genre, licensed, publisher, sequel, reviewScore,
-                       sales, usedPrice, releaseConsole, ESRBrating,
-                       reRelease, releaseYear);
+            Game toBeAdded(title, handheld, maxPlayers, multiplatform, online,
+                           genre, licensed, publisher, sequel, reviewScore,
+                           sales, usedPrice, releaseConsole, ESRBrating,
+                           reRelease, releaseYear);
 
 
-        listOfAllGames.push_back(toBeAdded);
+            listOfAllGames.push_back(toBeAdded);
 
 
         }
@@ -191,7 +191,7 @@ void countSort(vector<Game>& games, int n, int exp)
             }
         }
     }
-   // cout << games[i].reviewScore << endl;
+    // cout << games[i].reviewScore << endl;
 
 
 }
@@ -218,8 +218,82 @@ void radixsort(vector<Game>& games, int n)
 
 
 
+void swap(int &a, int &b) {
+    int temp = a;
+    a = b;
+    b = temp;
+}
+
+int partition(std::vector<Game> &arr, int low, int high) {
+    int pivot = arr[high].reviewScore;
+    int i = low - 1;
+
+    for (int j = low; j <= high - 1; j++) {
+        if (arr[j].reviewScore < pivot) {
+            i++;
+            swap(arr[i], arr[j]);
+        }
+    }
+
+    swap(arr[i + 1], arr[high]);
+    return (i + 1);
+}
+
+void quicksort(std::vector<Game> &arr, int low, int high) {
+
+    if (low < high) {
+        int pi = partition(arr, low, high);
+
+        quicksort(arr, low, pi - 1);
+        quicksort(arr, pi + 1, high);
+    }
+
+}
+
+
+
+
+
+
+
+
+void bucketSort(vector<Game>& arr) {
+    int n = arr.size();
+    if (n <= 0) {
+        return;
+    }
+
+    // Create n empty buckets
+    vector<vector<Game>> buckets(n);
+
+    // Place Game objects in different buckets based on their reviewScore
+    for (int i = 0; i < n; i++) {
+        int bucketIndex = n * (arr[i].reviewScore * 0.01);
+        buckets[bucketIndex].push_back(arr[i]);
+    }
+
+    // Sort individual buckets
+    for (int i = 0; i < n; i++) {
+        std::sort(buckets[i].begin(), buckets[i].end(), [](const Game& a, const Game& b) {
+            return a.reviewScore < b.reviewScore;
+        });
+    }
+
+    // Concatenate all sorted buckets into the original array
+    int index = 0;
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < buckets[i].size(); j++) {
+            arr[index++] = buckets[i][j];
+        }
+    }
+}
+
+
+
+
+
 int main() {
-  //  std::cout << "Hello, World!" << std::endl;
+    //  std::cout << "Hello, World!" << std::endl;
     regex top10Games = regex("top\\S+10\\S+games|top\\s+10\\s+games|top10 games|top 10games");
     regex top100Games = regex("top\\S+100\\S+games|top\\s+100\\s+games|100 games|top 100games");
     vector<Game> allGamesList;
@@ -245,6 +319,7 @@ int main() {
             if (regex_search(selection2, top10Games)) {
 // RADIX SORT FUNCTION
                 vector<Game> sortedList = allGamesList;
+
                 radixsort(sortedList, sortedList.size());
                 cout << "GameGenie: Sure, here are the top 10 games based on metric scores" << endl;
                 int n = 1;
@@ -268,9 +343,9 @@ int main() {
 
             else{
                 cout << "GameGenie: Sorry, I don't understand your question. Here are some questions you can ask me: " << endl;
-                 cout <<       "1. Show me the top 10 games" << endl;
-                 cout <<       "2. Show me the top 100 games" << endl;
-                 cout << "3. Tell me about this game (ex. Super Mario Bros.)" << endl;
+                cout <<       "1. Show me the top 10 games" << endl;
+                cout <<       "2. Show me the top 100 games" << endl;
+                cout << "3. Tell me about this game (ex. Super Mario Bros.)" << endl;
                 continue;
             }
 
@@ -278,6 +353,76 @@ int main() {
 
         }
 
+        else if(selection1 == "2"){
+            if (regex_search(selection2, top10Games)) {
+// QUICK SORT FUNCTION
+                vector<Game> sortedList = allGamesList;
+                auto start = high_resolution_clock::now();
+                quicksort(sortedList, 0, sortedList.size()-1);
+                auto stop = high_resolution_clock::now();
+                auto duration = duration_cast<microseconds>(stop - start);
+                cout << "GameGenie: The time taken by Quick Sort is: "
+                     << duration.count() << " microseconds" << endl;
+                cout << "GameGenie: Sure, here are the top 10 games based on metric scores" << endl;
+                int n = 1;
+                for (int i = sortedList.size() - 1; i > sortedList.size() - 11; --i) {
+                    cout << n << ". " << sortedList[i].returnTitle() << ": " << sortedList[i].returnRatings() << endl;
+                    ++n;
+                }
+            }
+            else if(regex_search(selection2, top100Games)){
+
+                vector<Game> sortedList = allGamesList;
+                auto start = high_resolution_clock::now();
+                quicksort(sortedList, 0, sortedList.size()-1);
+                auto stop = high_resolution_clock::now();
+                auto duration = duration_cast<microseconds>(stop - start);
+                cout << "GameGenie: The time taken by Quick Sort is: "
+                     << duration.count() << " microseconds" << endl;
+                cout << "GameGenie: Sure, here are the top 10 games based on metric scores" << endl;
+                int n = 1;
+                for (int i = sortedList.size() - 1; i > sortedList.size() - 101; --i) {
+                    cout << n << ". " << sortedList[i].returnTitle() << ": " << sortedList[i].returnRatings() << endl;
+                    ++n;
+                }
+            }
+
+        }
+        else if(selection1 == "3"){
+            if (regex_search(selection2, top10Games)) {
+// QUICK SORT FUNCTION
+                vector<Game> sortedList = allGamesList;
+                auto start = high_resolution_clock::now();
+                bucketSort(sortedList);
+                auto stop = high_resolution_clock::now();
+                auto duration = duration_cast<microseconds>(stop - start);
+                cout << "GameGenie: The time taken by Quick Sort is: "
+                     << duration.count() << " microseconds" << endl;
+                cout << "GameGenie: Sure, here are the top 10 games based on metric scores" << endl;
+                int n = 1;
+                for (int i = sortedList.size() - 1; i > sortedList.size() - 11; --i) {
+                    cout << n << ". " << sortedList[i].returnTitle() << ": " << sortedList[i].returnRatings() << endl;
+                    ++n;
+                }
+            }
+            else if(regex_search(selection2, top100Games)){
+
+                vector<Game> sortedList = allGamesList;
+                auto start = high_resolution_clock::now();
+                bucketSort(sortedList);
+                auto stop = high_resolution_clock::now();
+                auto duration = duration_cast<microseconds>(stop - start);
+                cout << "GameGenie: The time taken by Quick Sort is: "
+                     << duration.count() << " microseconds" << endl;
+                cout << "GameGenie: Sure, here are the top 10 games based on metric scores" << endl;
+                int n = 1;
+                for (int i = sortedList.size() - 1; i > sortedList.size() - 101; --i) {
+                    cout << n << ". " << sortedList[i].returnTitle() << ": " << sortedList[i].returnRatings() << endl;
+                    ++n;
+                }
+            }
+
+        }
 
 
         cout << endl;
@@ -289,7 +434,7 @@ int main() {
 
 
 
-  //  cout << "SORTED: " << endl;
+    //  cout << "SORTED: " << endl;
 
 /*
     for(Game A : allGamesList){
