@@ -296,6 +296,10 @@ int main() {
     //  std::cout << "Hello, World!" << std::endl;
     regex top10Games = regex("top\\S+10\\S+games|top\\s+10\\s+games|top10 games|top 10games");
     regex top100Games = regex("top\\S+100\\S+games|top\\s+100\\s+games|100 games|top 100games");
+    regex thisGame = regex("S+this\\S+game|s+this\\s+game|this game|this game|thisgame");
+    regex aboutGame = regex("S+about\\S+game|s+about\\s+game|about game|about game|aboutgame");
+    regex infoGame = regex("S+info\\S+game|s+info\\s+game|info game|info game|infogame");
+    regex showGame = regex("S+show\\S+game|s+show\\s+game|show game|showgame");
     vector<Game> allGamesList;
 
     extractDataFromFile(allGamesList);
@@ -309,7 +313,7 @@ int main() {
     getline(cin, selection1);
     cout << "GameGenie: What questions do you have today?" << endl;
     bool programRun = true;
-    while(programRun) {
+    while (programRun) {
         cout << "User: ";
         getline(cin, selection2);
         transform(selection2.begin(), selection2.end(), selection2.begin(), ::tolower);
@@ -327,9 +331,7 @@ int main() {
                     cout << n << ". " << sortedList[i].returnTitle() << ": " << sortedList[i].returnRatings() << endl;
                     ++n;
                 }
-            }
-
-            else if(regex_search(selection2, top100Games)){
+            } else if (regex_search(selection2, top100Games)) {
 
                 vector<Game> sortedList = allGamesList;
                 radixsort(sortedList, sortedList.size());
@@ -339,26 +341,56 @@ int main() {
                     cout << n << ". " << sortedList[i].returnTitle() << ": " << sortedList[i].returnRatings() << endl;
                     ++n;
                 }
-            }
+            } else if (regex_search(selection2, thisGame) | regex_search(selection2, infoGame) |
+                       regex_search(selection2, aboutGame)
+                       | regex_search(selection2, showGame)) {
+                vector<Game> sortedList = allGamesList;
+                radixsort(sortedList, sortedList.size());
+                cout << "GameGenie: Sure, what game title do you need to look up?" << endl;
+                bool correct = false;
+                bool found = false;
+                while (!correct) {
+                    cout << "User: ";
+                    string lookUp;
+                    getline(cin, lookUp);
+                    for (auto a: sortedList) {
+                        if (lookUp == a.returnTitle()) {
+                            cout << "GameGenie: Here is the game you requested" << endl;
+                            cout << "Title: " << a.returnTitle() << endl;
+                            cout << "Genre: " << a.returnGenre() << endl;
+                            cout << "Year: " << a.returnYear() << endl;
+                            cout << "Publisher: " << a.returnPublisher() << endl;
+                            cout << "Release Console: " << a.returnConsole() << endl;
+                            cout << "Sales: " << a.returnSales() << endl;
+                            cout << "Metric Score: " << a.returnRatings() << endl;
+                            correct = true;
+                            found = true;
+                            break;
+                        }
 
-            else{
-                cout << "GameGenie: Sorry, I don't understand your question. Here are some questions you can ask me: " << endl;
-                cout <<       "1. Show me the top 10 games" << endl;
-                cout <<       "2. Show me the top 100 games" << endl;
+
+                    }
+                    if (found == false) {
+                        cout << "Sorry, I can't find that game, try again?" << endl;
+                        correct = false;
+                    }
+                }
+            } else {
+                cout << "GameGenie: Sorry, I don't understand your question. Here are some questions you can ask me: "
+                     << endl;
+                cout << "1. Show me the top 10 games" << endl;
+                cout << "2. Show me the top 100 games" << endl;
                 cout << "3. Tell me about this game (ex. Super Mario Bros.)" << endl;
                 continue;
             }
 
 
-
-        }
-
-        else if(selection1 == "2"){
+        } else if (selection1 == "2") {
             if (regex_search(selection2, top10Games)) {
 // QUICK SORT FUNCTION
                 vector<Game> sortedList = allGamesList;
                 auto start = high_resolution_clock::now();
-                quicksort(sortedList, 0, sortedList.size()-1);
+                quicksort(sortedList, 0, sortedList.size() - 1);
                 auto stop = high_resolution_clock::now();
                 auto duration = duration_cast<microseconds>(stop - start);
                 cout << "GameGenie: The time taken by Quick Sort is: "
@@ -369,12 +401,11 @@ int main() {
                     cout << n << ". " << sortedList[i].returnTitle() << ": " << sortedList[i].returnRatings() << endl;
                     ++n;
                 }
-            }
-            else if(regex_search(selection2, top100Games)){
+            } else if (regex_search(selection2, top100Games)) {
 
                 vector<Game> sortedList = allGamesList;
                 auto start = high_resolution_clock::now();
-                quicksort(sortedList, 0, sortedList.size()-1);
+                quicksort(sortedList, 0, sortedList.size() - 1);
                 auto stop = high_resolution_clock::now();
                 auto duration = duration_cast<microseconds>(stop - start);
                 cout << "GameGenie: The time taken by Quick Sort is: "
@@ -385,10 +416,56 @@ int main() {
                     cout << n << ". " << sortedList[i].returnTitle() << ": " << sortedList[i].returnRatings() << endl;
                     ++n;
                 }
+            } else if (regex_search(selection2, thisGame) | regex_search(selection2, infoGame) |
+                       regex_search(selection2, aboutGame)
+                       | regex_search(selection2, showGame)) {
+                vector<Game> sortedList = allGamesList;
+                auto start = high_resolution_clock::now();
+                quicksort(sortedList, 0, sortedList.size() - 1);
+                auto stop = high_resolution_clock::now();
+                auto duration = duration_cast<microseconds>(stop - start);
+                cout << "GameGenie: The time taken by Quick Sort is: "
+                     << duration.count() << " microseconds" << endl;
+                cout << "GameGenie: Sure, what game title do you need to look up?" << endl;
+
+                bool correct = false;
+                bool found = false;
+                while (!correct) {
+                    cout << "User: ";
+                    string lookUp;
+                    getline(cin, lookUp);
+                    for (auto a: sortedList) {
+                        if (lookUp == a.returnTitle()) {
+                            cout << "GameGenie: Here is the game you requested" << endl;
+                            cout << "Title: " << a.returnTitle() << endl;
+                            cout << "Genre: " << a.returnGenre() << endl;
+                            cout << "Year: " << a.returnYear() << endl;
+                            cout << "Publisher: " << a.returnPublisher() << endl;
+                            cout << "Release Console: " << a.returnConsole() << endl;
+                            cout << "Sales: " << a.returnSales() << endl;
+                            cout << "Metric Score: " << a.returnRatings() << endl;
+                            correct = true;
+                            found = true;
+                            break;
+                        }
+
+
+                    }
+                    if (found == false) {
+                        cout << "Sorry, I can't find that game, try again?" << endl;
+                        correct = false;
+                    }
+                }
+            } else {
+                cout << "GameGenie: Sorry, I don't understand your question. Here are some questions you can ask me: "
+                     << endl;
+                cout << "1. Show me the top 10 games" << endl;
+                cout << "2. Show me the top 100 games" << endl;
+                cout << "3. Tell me about this game (ex. Super Mario Bros.)" << endl;
+                continue;
             }
 
-        }
-        else if(selection1 == "3"){
+        } else if (selection1 == "3") {
             if (regex_search(selection2, top10Games)) {
 // QUICK SORT FUNCTION
                 vector<Game> sortedList = allGamesList;
@@ -396,7 +473,7 @@ int main() {
                 bucketSort(sortedList);
                 auto stop = high_resolution_clock::now();
                 auto duration = duration_cast<microseconds>(stop - start);
-                cout << "GameGenie: The time taken by Quick Sort is: "
+                cout << "GameGenie: The time taken by Bucket Sort is: "
                      << duration.count() << " microseconds" << endl;
                 cout << "GameGenie: Sure, here are the top 10 games based on metric scores" << endl;
                 int n = 1;
@@ -404,22 +481,68 @@ int main() {
                     cout << n << ". " << sortedList[i].returnTitle() << ": " << sortedList[i].returnRatings() << endl;
                     ++n;
                 }
-            }
-            else if(regex_search(selection2, top100Games)){
+            } else if (regex_search(selection2, top100Games)) {
 
                 vector<Game> sortedList = allGamesList;
                 auto start = high_resolution_clock::now();
                 bucketSort(sortedList);
                 auto stop = high_resolution_clock::now();
                 auto duration = duration_cast<microseconds>(stop - start);
-                cout << "GameGenie: The time taken by Quick Sort is: "
+                cout << "GameGenie: The time taken by Bucket Sort is: "
                      << duration.count() << " microseconds" << endl;
-                cout << "GameGenie: Sure, here are the top 10 games based on metric scores" << endl;
+                cout << "GameGenie: Sure, here are the top 100 games based on metric scores" << endl;
                 int n = 1;
                 for (int i = sortedList.size() - 1; i > sortedList.size() - 101; --i) {
                     cout << n << ". " << sortedList[i].returnTitle() << ": " << sortedList[i].returnRatings() << endl;
                     ++n;
                 }
+            } else if (regex_search(selection2, thisGame) | regex_search(selection2, infoGame) |
+                       regex_search(selection2, aboutGame)
+                       | regex_search(selection2, showGame)) {
+                vector<Game> sortedList = allGamesList;
+                auto start = high_resolution_clock::now();
+                bucketSort(sortedList);
+                auto stop = high_resolution_clock::now();
+                auto duration = duration_cast<microseconds>(stop - start);
+                cout << "GameGenie: The time taken by Bucket Sort is: "
+                     << duration.count() << " microseconds" << endl;
+                cout << "GameGenie: Sure, what game title do you need to look up?" << endl;
+
+                bool correct = false;
+                bool found = false;
+                while (!correct) {
+                    cout << "User: ";
+                    string lookUp;
+                    getline(cin, lookUp);
+                    for (auto a: sortedList) {
+                        if (lookUp == a.returnTitle()) {
+                            cout << "GameGenie: Here is the game you requested" << endl;
+                            cout << "Title: " << a.returnTitle() << endl;
+                            cout << "Genre: " << a.returnGenre() << endl;
+                            cout << "Year: " << a.returnYear() << endl;
+                            cout << "Publisher: " << a.returnPublisher() << endl;
+                            cout << "Release Console: " << a.returnConsole() << endl;
+                            cout << "Sales: " << a.returnSales() << endl;
+                            cout << "Metric Score: " << a.returnRatings() << endl;
+                            correct = true;
+                            found = true;
+                            break;
+                        }
+
+
+                    }
+                    if (found == false) {
+                        cout << "Sorry, I can't find that game, try again?" << endl;
+                        correct = false;
+                    }
+                }
+            } else {
+                cout << "GameGenie: Sorry, I don't understand your question. Here are some questions you can ask me: "
+                     << endl;
+                cout << "1. Show me the top 10 games" << endl;
+                cout << "2. Show me the top 100 games" << endl;
+                cout << "3. Tell me about this game (ex. Super Mario Bros.)" << endl;
+                continue;
             }
 
         }
@@ -445,4 +568,6 @@ int main() {
 
 
     return 0;
+
 }
+
