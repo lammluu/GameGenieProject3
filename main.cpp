@@ -154,32 +154,28 @@ int getMax(vector<Game>& games, int n)
     return mx;
 }
 
-// A function to do counting sort of arr[] according to
-// the digit represented by exp.
 void countSort(vector<Game>& games, int n, int exp)
 {
     vector<Game> unsortedTempGames = games;
-    int output[n]; // output array
+    int output[n];
     int  i, count[10] = { 0 };
 
-    // Store count of occurrences in count[]
+
     for (i = 0; i < n; i++)
         count[(games[i].reviewScore / exp) % 10]++;
 
-    // Change count[i] so that count[i] now contains actual
-    //  position of this digit in output[]
+
     for (i = 1; i < 10; i++)
         count[i] += count[i - 1];
 
-    // Build the output array
+
     for (i = n - 1; i >= 0; i--) {
         output[count[(games[i].reviewScore / exp) % 10] - 1] = games[i].reviewScore;
         count[(games[i].reviewScore / exp) % 10]--;
 
     }
 
-    // Copy the output array to arr[], so that arr[] now
-    // contains sorted numbers according to current digit
+
     for (i = 0; i < n; i++) {
         games[i].reviewScore = output[i];
         for (int j = 0; j < unsortedTempGames.size(); j++) {
@@ -196,7 +192,7 @@ void countSort(vector<Game>& games, int n, int exp)
 
 }
 
-// The main function to that sorts arr[] of size n using
+
 // Radix Sort
 void radixsort(vector<Game>& games, int n)
 {
@@ -204,9 +200,7 @@ void radixsort(vector<Game>& games, int n)
     // Find the maximum number to know number of digits
     int m = getMax(games, n);
 
-    // Do counting sort for every digit. Note that instead
-    // of passing digit number, exp is passed. exp is 10^i
-    // where i is current digit number
+
     for (int exp = 1; m / exp > 0; exp *= 10)
         countSort(games, n, exp);
     auto stop = high_resolution_clock::now();
@@ -263,23 +257,23 @@ void bucketSort(vector<Game>& arr) {
         return;
     }
 
-    // Create n empty buckets
+
     vector<vector<Game>> buckets(n);
 
-    // Place Game objects in different buckets based on their reviewScore
+
     for (int i = 0; i < n; i++) {
         int bucketIndex = n * (arr[i].reviewScore * 0.01);
         buckets[bucketIndex].push_back(arr[i]);
     }
 
-    // Sort individual buckets
+
     for (int i = 0; i < n; i++) {
         std::sort(buckets[i].begin(), buckets[i].end(), [](const Game& a, const Game& b) {
             return a.reviewScore < b.reviewScore;
         });
     }
 
-    // Concatenate all sorted buckets into the original array
+
     int index = 0;
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < buckets[i].size(); j++) {
@@ -300,6 +294,7 @@ int main() {
     regex aboutGame = regex("S+about\\S+game|s+about\\s+game|about game|about game|aboutgame");
     regex infoGame = regex("S+info\\S+game|s+info\\s+game|info game|info game|infogame");
     regex showGame = regex("S+show\\S+game|s+show\\s+game|show game|showgame");
+    regex genre = regex("genre");
     vector<Game> allGamesList;
 
     extractDataFromFile(allGamesList);
@@ -375,12 +370,50 @@ int main() {
                         correct = false;
                     }
                 }
-            } else {
+            }
+
+            else if(regex_search(selection2, genre)){
+                vector<Game> sortedList = allGamesList;
+                radixsort(sortedList, sortedList.size());
+                cout << "GameGenie: Sure, what game genre do you need to look up?" << endl;
+                bool correct = false;
+                bool found = false;
+                bool message = true;
+                while (!correct) {
+                    cout << "User: ";
+                    string lookUp;
+                    getline(cin, lookUp);
+                    int n = 0;
+                    for (auto a: sortedList) {
+                        if (lookUp == a.returnGenre()) {
+                            if(message){
+                                cout << "GameGenie: Here is the list of games with genre " << lookUp << " you requested" << endl;
+                                message = false;
+                            }
+                            ++n;
+                            cout << n << ". " << a.returnTitle() << endl;
+
+                            correct = true;
+                            found = true;
+
+                        }
+
+
+                    }
+                    if (found == false) {
+                        cout << "Sorry, I can't find that genre, try again?" << endl;
+                        correct = false;
+                    }
+                }
+            }
+
+            else {
                 cout << "GameGenie: Sorry, I don't understand your question. Here are some questions you can ask me: "
                      << endl;
                 cout << "1. Show me the top 10 games" << endl;
                 cout << "2. Show me the top 100 games" << endl;
                 cout << "3. Tell me about this game (ex. Super Mario Bros.)" << endl;
+                cout << "4. Show me games with this genre (ex. Action)" << endl;
                 continue;
             }
 
@@ -456,7 +489,52 @@ int main() {
                         correct = false;
                     }
                 }
-            } else {
+            }
+
+
+            else if(regex_search(selection2, genre)){
+                vector<Game> sortedList = allGamesList;
+                auto start = high_resolution_clock::now();
+                quicksort(sortedList, 0, sortedList.size() - 1);
+                auto stop = high_resolution_clock::now();
+                auto duration = duration_cast<microseconds>(stop - start);
+                cout << "GameGenie: The time taken by Quick Sort is: "
+                     << duration.count() << " microseconds" << endl;
+                cout << "GameGenie: Sure, what game genre do you need to look up?" << endl;
+                bool correct = false;
+                bool found = false;
+                bool message = true;
+                while (!correct) {
+                    cout << "User: ";
+                    string lookUp;
+                    getline(cin, lookUp);
+                    int n = 0;
+                    for (auto a: sortedList) {
+                        if (lookUp == a.returnGenre()) {
+                            if(message){
+                                cout << "GameGenie: Here is the list of games with genre " << lookUp << " you requested" << endl;
+                                message = false;
+                            }
+                            ++n;
+                            cout << n << ". " << a.returnTitle() << endl;
+
+                            correct = true;
+                            found = true;
+
+                        }
+
+
+                    }
+                    if (found == false) {
+                        cout << "Sorry, I can't find that genre, try again?" << endl;
+                        correct = false;
+                    }
+                }
+            }
+
+
+
+            else {
                 cout << "GameGenie: Sorry, I don't understand your question. Here are some questions you can ask me: "
                      << endl;
                 cout << "1. Show me the top 10 games" << endl;
@@ -536,7 +614,51 @@ int main() {
                         correct = false;
                     }
                 }
-            } else {
+            }
+
+            else if(regex_search(selection2, genre)){
+                vector<Game> sortedList = allGamesList;
+                auto start = high_resolution_clock::now();
+                bucketSort(sortedList);
+                auto stop = high_resolution_clock::now();
+                auto duration = duration_cast<microseconds>(stop - start);
+                cout << "GameGenie: The time taken by Bucket Sort is: "
+                     << duration.count() << " microseconds" << endl;
+                cout << "GameGenie: Sure, what game genre do you need to look up?" << endl;
+                bool correct = false;
+                bool found = false;
+                bool message = true;
+                while (!correct) {
+                    cout << "User: ";
+                    string lookUp;
+                    getline(cin, lookUp);
+                    int n = 0;
+                    for (auto a: sortedList) {
+                        if (lookUp == a.returnGenre()) {
+                            if(message){
+                                cout << "GameGenie: Here is the list of games with genre " << lookUp << " you requested" << endl;
+                                message = false;
+                            }
+                            ++n;
+                            cout << n << ". " << a.returnTitle() << endl;
+
+                            correct = true;
+                            found = true;
+
+                        }
+
+
+                    }
+                    if (found == false) {
+                        cout << "Sorry, I can't find that genre, try again?" << endl;
+                        correct = false;
+                    }
+                }
+            }
+
+
+
+            else {
                 cout << "GameGenie: Sorry, I don't understand your question. Here are some questions you can ask me: "
                      << endl;
                 cout << "1. Show me the top 10 games" << endl;
@@ -570,4 +692,3 @@ int main() {
     return 0;
 
 }
-
