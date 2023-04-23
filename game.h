@@ -65,5 +65,27 @@ struct Game{
         return reviewScore;
     }
 
+    string returnConsole(){
+        return releaseConsole;
+    }
+
+    int returnYear(){
+        return releaseYear;
+    }
+
+    string returnGenre(){
+        return genre;
+    }
+
+    int returnMaxPlayers(){
+        return maxPlayers;
+    }
+
+    string returnPublisher(){
+        return publisher;
+    }
+
 
 };
+
+
